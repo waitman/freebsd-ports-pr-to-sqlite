@@ -6,6 +6,18 @@ Please read LICENSE file for COPYING information.
 
 This software syncs with the ports PR gnats database on FreeBSD.org and parses the files, and keeps summary information in an SQLite3 database.
 
+Requirements:
+
+Tested with perl 5.16.2, may work with other versions.
+
+DBI
+DBD::SQLite
+Time::Piece
+Sys::Syslog
+
+*comment out the syslog call if you don't want it logging to syslog.
+
+
 Programs:
 
 (.) parse-gnats-ports.pl
