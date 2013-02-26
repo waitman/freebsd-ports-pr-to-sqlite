@@ -1,0 +1,39 @@
+freebsd-ports-pr-to-sqlite
+
+Copyright 2013 by Waitman Gobble <waitman@waitman.net>
+
+Please read LICENSE file for COPYING information.
+
+This software syncs with the ports PR gnats database on FreeBSD.org and parses the files, and keeps summary information in an SQLite3 database.
+
+Programs:
+
+(.) parse-gnats-ports.pl
+
+	This program scans the ports directory and updates the SQLite3 database.
+	It reports the number of updated PR in the syslog, but only if
+	there are any.
+	Note that warnings are disabled, the strptime() function in Perl can be 
+	a bit finicky, and we are dealing with thousands of reports from many 
+	different users with many different email clients. For the most part 
+	the different cases are handled but there are still a few random 
+	complaints coming out of strptime(); If you are hacking on the code 
+	or having some problems you might like to comment out the line at 
+	the top to get warnings back for debug purposes, etc.
+	The newest file timestamp is stored in '/var/db/lastrun.txt'. 
+	If the program cannot read the file, or the value is zero, it will 
+	re-parse all the files and update or re-create the DB.
+	This can take 10-20 minutes or longer, depending on your hardware.
+	Otherwise an update should go pretty quick.
+	I am testing with 0-59/10 in cron, or every 10 minutes, and it seems to
+	work pretty good.
+
+(.) sync-gnats-ports.pl
+
+	This program can be run from cron, or from the command line. 
+	It will terminate if the file /tmp/pr-up-running exists, to avoid 
+	the possibility of multiple processes wrecking your system. In the 
+	event of a power loss, or reboot, it is advised to add the line 
+	'rm -f /tmp/pr-up-running' to your rc.local. 
+
+
