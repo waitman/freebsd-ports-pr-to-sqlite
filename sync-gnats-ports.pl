@@ -4,6 +4,7 @@
 #Copyright 2013 Waitman Gobble <waitman@waitman.net>
 #read README and LICENCE for more information.
 
+
 if ($#ARGV !=0) {
         print "\nUsage: sync-gnats-ports.pl DESTDIR\n";
         exit;

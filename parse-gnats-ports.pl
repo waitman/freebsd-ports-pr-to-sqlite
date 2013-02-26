@@ -1,11 +1,11 @@
-#!/usr/pkg/bin/perl -w
+#!/usr/pkg/bin/perl 
 
 #parse-gnats-ports.pl
 #Copyright 2013 Waitman Gobble <waitman@waitman.net>
 #see LICENSE and README for important Information
 
+
 use strict;
-use warnings;
 use DBI;
 use Time::Piece;
 use Sys::Syslog;
@@ -13,11 +13,23 @@ use Sys::Syslog;
 local $SIG{__WARN__} = sub {}; #fun! 
 
 
+if ($#ARGV !=0) {
+	print "\nUsage: parse-gnats-ports.pl DESTDIR\n";
+	exit;
+}
+
+my $destdir = $ARGV[0];
+unless (-d $destdir) {
+	print "\n$destdir does not Exist.\n";
+	exit;
+}
+$destdir =~ s!/*$!/!;
+
 my $did_update = 0;
 my $file;
 my $chk_dt = 0;
 my $max_dt = 0;
-my $dbh = DBI->connect("dbi:SQLite:dbname=ports-pr.db") or die $DBI::errstr;
+my $dbh = DBI->connect("dbi:SQLite:dbname=/var/db/ports-pr.db") or die $DBI::errstr;
 
 if (-e '/var/db/lastrun.txt') {
 	open FILE, '/var/db/lastrun.txt';
@@ -27,14 +39,18 @@ if (-e '/var/db/lastrun.txt') {
 	$dbh->do("CREATE TABLE pr (status TEXT,postdate TEXT,pr TEXT,who TEXT,desc TEXT,last_activity TEXT,num_msgs TEXT)");
 }
 
-my @files = <*>;
+my @files = <$destdir*>;
 foreach $file (@files) {
 
 	my $state = '';
 	my $responsible = '';
 	
 	next if ($file =~ m/\./);
-	my $pr = "ports/".$file;
+
+        my $pr = $file;
+        $pr =~ s/$destdir//;
+        $pr = 'ports/'.$pr;
+
 	my $this_dt = (stat $file)[9];
 	next if ($this_dt<=$chk_dt);
 
