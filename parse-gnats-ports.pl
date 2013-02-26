@@ -117,7 +117,7 @@ foreach $file (@files) {
 		if (length $responsible) {
 			$responsible =~ s/\n//;
 			$responsible =~ s/\r//;
-			my @n = {};
+			my @n;
 			eval { @n = split(/->/,$responsible) };
 			if ($@) {
 				$responsible = '';
@@ -168,9 +168,9 @@ sub fundate {
 		$date =~ s/\r//;
 		$date =~ s/\h+/ /g;
 		$date =~ s/UT$/GMT/;
-		$date =~ s/ DST//g;
+		$date =~ s/\sDST//g;
 		$date =~ s/\sDaylight Time//g;
-		$date =~ s/\(\+0800\)//g;
+		$date =~ s/\s\(\+0800\)//g;
 		eval { my $ed = Time::Piece->strptime($date,'%a, %d %b %Y %T %z (%Z)') };
 		if ($@) {
 			eval { $ed = Time::Piece->strptime($date, '%a, %d %b %Y %T %Z') };
